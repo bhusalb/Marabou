@@ -94,6 +94,7 @@ void Options::initializeDefaultValues()
     _stringOptions[SYMBOLIC_BOUND_TIGHTENING_TYPE] = "deeppoly";
     _stringOptions[MILP_SOLVER_BOUND_TIGHTENING_TYPE] = "none";
     _stringOptions[QUERY_DUMP_FILE] = "";
+    _stringOptions[SMT_QUERY_DUMP_FILE] = "";
     _stringOptions[IMPORT_ASSIGNMENT_FILE_PATH] = "assignment.txt";
     _stringOptions[EXPORT_ASSIGNMENT_FILE_PATH] = "assignment.txt";
     _stringOptions[SOI_SEARCH_STRATEGY] = "mcmc";

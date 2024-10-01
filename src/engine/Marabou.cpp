@@ -154,6 +154,13 @@ void Marabou::prepareQuery()
         printf( "\nInput query successfully dumped to file\n" );
         exit( 0 );
     }
+
+    String smtQueryDumpFilePath = Options::get()->getString( Options::SMT_QUERY_DUMP_FILE );
+    if ( smtQueryDumpFilePath.length() > 0 )
+    {
+        _inputQuery.saveQueryAsSmtLib( smtQueryDumpFilePath );
+        printf( "\nInput query successfully dumped to smt file\n" );
+    }
 }
 
 void Marabou::importDebuggingSolution()

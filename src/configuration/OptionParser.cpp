@@ -110,6 +110,10 @@ void OptionParser::initialize()
         boost::program_options::value<std::string>( &( *_stringOptions )[Options::QUERY_DUMP_FILE] )
             ->default_value( ( *_stringOptions )[Options::QUERY_DUMP_FILE] ),
         "Dump the verification query in Marabou's input query format." )(
+        "smt-query-dump-file",
+        boost::program_options::value<std::string>( &( *_stringOptions )[Options::SMT_QUERY_DUMP_FILE] )
+            ->default_value( ( *_stringOptions )[Options::SMT_QUERY_DUMP_FILE] ),
+        "Dump the verification query in SMTLIB format." )(
         "summary-file",
         boost::program_options::value<std::string>(
             &( ( *_stringOptions )[Options::SUMMARY_FILE] ) )

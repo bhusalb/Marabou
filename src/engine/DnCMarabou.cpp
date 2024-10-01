@@ -106,6 +106,13 @@ void DnCMarabou::run()
         exit( 0 );
     }
 
+    String smtQueryDumpFilePath = Options::get()->getString( Options::SMT_QUERY_DUMP_FILE );
+    if ( smtQueryDumpFilePath.length() > 0 )
+    {
+        _inputQuery.saveQueryAsSmtLib( smtQueryDumpFilePath );
+        printf( "\nInput query successfully dumped to smt file\n" );
+    }
+
     /*
       Step 3: initialize the DNC core
     */
