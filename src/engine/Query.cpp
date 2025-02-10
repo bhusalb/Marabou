@@ -583,11 +583,24 @@ void Query::saveQuery( const String &fileName )
 
 void Query::saveQueryAsSmtLib( const String &fileName ) const
 {
-    if ( !_nlConstraints.empty() )
-    {
-        printf( "SMTLIB conversion does not support nonlinear constraints yet. Aborting "
-                "Conversion.\n" );
-        return;
+    // if ( !_nlConstraints.empty() )
+    // {
+        // printf( "SMTLIB conversion does not support nonlinear constraints yet. Aborting "
+        //         "Conversion.\n" );
+        // return;
+
+    // }
+    Vector<unsigned> sigmoidVars;
+    for(NonlinearConstraint* nlConstraint: _nlConstraints) {
+        if (nlConstraint->getType() != SIGMOID) {
+            printf("Only Sigmoid supported among non-linear functions so far\n");
+            return;
+        }
+
+        auto vars = nlConstraint->getParticipatingVariables();
+        Vector<unsigned> conVars( vars.begin(), vars.end() );
+        sigmoidVars.append(conVars[0]);
+        sigmoidVars.append(conVars[1]);
     }
 
     List<Equation> equations;
@@ -609,7 +622,8 @@ void Query::saveQueryAsSmtLib( const String &fileName ) const
                                      lowerBounds,
                                      NULL,
                                      _equations,
-                                     _plConstraints );
+                                     _plConstraints,
+                                     sigmoidVars );
 }
 
 void Query::markInputVariable( unsigned variable, unsigned inputIndex )

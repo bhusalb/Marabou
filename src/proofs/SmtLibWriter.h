@@ -124,6 +124,9 @@ public:
     /*
       A wrapper function calling all previous functions
     */
+
+    static void addSigmoidConstraint(unsigned b, unsigned f, List<String> &instance );
+
     static void writeToSmtLibFile( const String &fileName,
                                    unsigned numOfTableauRows,
                                    unsigned numOfVariables,
@@ -131,7 +134,8 @@ public:
                                    const Vector<double> &lowerBounds,
                                    const SparseMatrix *tableau,
                                    const List<Equation> &additionalEquations,
-                                   const List<PiecewiseLinearConstraint *> &problemConstraints );
+                                   const List<PiecewiseLinearConstraint *> &problemConstraints,
+                                   const Vector<unsigned> &sigmoidVars );
 };
 
 #endif //__SmtLibWriter_h__

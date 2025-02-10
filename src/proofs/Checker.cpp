@@ -318,7 +318,8 @@ void Checker::writeToFile()
                                      _groundLowerBounds,
                                      _initialTableau,
                                      List<Equation>(),
-                                     _problemConstraints );
+                                     _problemConstraints,
+                                     Vector<unsigned>() );
 
     ++_delegationCounter;
 }

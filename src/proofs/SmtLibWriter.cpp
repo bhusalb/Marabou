@@ -31,7 +31,8 @@ void SmtLibWriter::writeToSmtLibFile( const String &fileName,
                                       const Vector<double> &lowerBounds,
                                       const SparseMatrix *tableau,
                                       const List<Equation> &additionalEquations,
-                                      const List<PiecewiseLinearConstraint *> &problemConstraints )
+                                      const List<PiecewiseLinearConstraint *> &problemConstraints,
+                                      const Vector<unsigned> &sigmoidVars )
 {
     List<String> instance;
 
@@ -116,6 +117,13 @@ void SmtLibWriter::writeToSmtLibFile( const String &fileName,
             SmtLibWriter::addLeakyReLUConstraint(
                 b, f, slope, constraint->getPhaseStatus(), instance );
         }
+    }
+
+    for ( int i = 0; i < sigmoidVars.size(); ) {
+        b = sigmoidVars[i];
+        f = sigmoidVars[i + 1];
+        SmtLibWriter::addSigmoidConstraint( b, f, instance );
+        i += 2;  
     }
 
     SmtLibWriter::addFooter( instance );
@@ -402,14 +410,20 @@ void SmtLibWriter::addEquation( const Equation &eq, List<String> &instance, bool
     if ( assertEquations )
         assertRowLine += "( assert ";
 
-    if ( eq._type == Equation::EQ )
+    if ( eq._type == Equation::EQ ){
         assertRowLine += "( = ";
-    else if ( eq._type == Equation::LE )
+        counter++;
+    }
+    else if ( eq._type == Equation::LE ) {
         // Scalar should be >= than sum of addends
         assertRowLine += "( >= ";
-    else
+        counter++;
+    }
+    else{
         // Scalar should be <= than sum of addends
         assertRowLine += "( <= ";
+        counter++;
+    }
 
     assertRowLine += signedValue( eq._scalar );
 
@@ -418,13 +432,19 @@ void SmtLibWriter::addEquation( const Equation &eq, List<String> &instance, bool
         if ( FloatUtils::isZero( addend._coefficient ) )
         {
             // If the last addend has coefficient zero, add 0 to close previously opened addition
-            if ( addend == eq._addends.back() )
+            if ( addend == eq._addends.back() ) {
                 assertRowLine += String( " 0 )" );
+                counter--;
+            }
             continue;
         }
 
-        if ( !( addend == eq._addends.back() ) )
+        if ( !( addend == eq._addends.back() ) ){
             assertRowLine += String( " ( + " );
+            ++counter;
+        }
+            
+
         else
             assertRowLine += String( " " );
 
@@ -438,7 +458,7 @@ void SmtLibWriter::addEquation( const Equation &eq, List<String> &instance, bool
             assertRowLine += String( "( * " ) + signedValue( addend._coefficient ) + " x" +
                              std::to_string( addend._variable ) + " )";
 
-        ++counter;
+        
     }
 
     for ( unsigned i = 0; i < counter; ++i )
@@ -455,4 +475,10 @@ void SmtLibWriter::addTightening( Tightening bound, List<String> &instance )
     else
         instance.append( String( "( <= x" + std::to_string( bound._variable ) ) + String( " " ) +
                          signedValue( bound._value ) + " )" );
+}
+
+void SmtLibWriter::addSigmoidConstraint(unsigned b, unsigned f, List<String> &instance )
+{
+    instance.append(String("( assert ( = x") + std::to_string(f) 
+                        + String(" ( / 1 ( + 1 ( exp ( - x") + std::to_string(b) + String(" ) ) ) ) ) )\n"));
 }
